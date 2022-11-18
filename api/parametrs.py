@@ -1,0 +1,1 @@
+SCAN_FORDER_PART = '/global_forder/scan/'
