@@ -15,12 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from api import views
+from api.views import views_scan, views_copy, views_print, views_all
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('scan_get_forder/', csrf_exempt(views.scan_get_forder_path)),
-    path('scan_get_params/', csrf_exempt(views.scan_get_params)),
-    path('writehistory/', views.write_history)
+    path('get_scan/', csrf_exempt(views_scan.get_scan)),
+    path('scan_get_params/', csrf_exempt(views_scan.scan_get_params)),
+    path('change_rotate_image/', views_scan.change_rotate_image),
+    path('get_pdf/', views_scan.get_pdf),
+    path('delete_scan/', views_scan.delete_scan),
+    path('get_type_save_file/', views_scan.get_type_save_file)
+    #path('writehistory/', views_scan.write_history),
+    #path('get_all_options/', views_all.get_all_options)
 ]
