@@ -9,7 +9,7 @@ class TypeOperationSerializer(serializers.ModelSerializer):
         fields = ("name",) #id "id"
 
 
-class ScanPriceSerializer(serializers.ModelSerializer):
+class PriceSerializer(serializers.ModelSerializer):
     operation = TypeOperationSerializer(source = 'type_operation', read_only=True)
 
     class Meta:

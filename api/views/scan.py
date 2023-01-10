@@ -3,22 +3,32 @@ import os
 import sane
 from api.views import views_scan
 from api.views.change_image import image_rotation
-from api.views.parametrs import SCAN_FOLDER_PATH
+from api.views.parametrs import SCAN_FOLDER_PATH, NAME_SCAN_MACHINE
+import time
 
 
 depth = 8 
 mode = 'color' 
 #user_part = '/global_forder/scan/63e71a53-4af9-4ac6-8fc4-74e2a5b0c62b'
 
-def test_scan(id_session): 
+def test_scan(user_folder, id_session, br_x, br_y): 
     sane.init() 
-    try: 
-        dev = sane.open("airscan:e1:RICOH MP 305+ [002673D97517]")  # открываем 
-    except: 
-        print("Not found scanner") 
+
+    try_connect = False
+    timeout = time.time()
+    while try_connect == False or time.time() - timeout > 10.0:
+        try:
+            #airscan:e0:RICOH MP 305+ [002673D97517]
+            dev = sane.open(NAME_SCAN_MACHINE)
+            try_connect = True
+            break
+        except:
+            dev = None
+
+    if not try_connect:
         sane.exit() 
         return "Not found scanner"
- 
+
     # без параметров погибает и не сканирует 
     params = dev.get_parameters() 
 
@@ -33,8 +43,8 @@ def test_scan(id_session):
         print('Cannot set mode, defaulting to %s' % params[0]) 
  
     try: 
-        dev.br_x = 320. 
-        dev.br_y = 200. 
+        dev.br_x = br_x  
+        dev.br_y = br_y  
     except: 
         print('Cannot set scan area, using default') 
  
@@ -44,13 +54,11 @@ def test_scan(id_session):
     dev.start() 
     im = dev.snap() 
 
-    user_path = SCAN_FOLDER_PATH+id_session
-
-    data = views_scan.get_all_scan_from_user(id_session=id_session)
+    data = views_scan.get_all_scan_from_user(id_session=id_session, user_folder = user_folder)
 
     new_file_name = views_scan.get_new_name_scan(data)
 
-    file = user_path+"/"+new_file_name
+    file = user_folder+new_file_name
 
     im.save(file) 
     data.append(new_file_name)
